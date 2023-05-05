@@ -1,22 +1,19 @@
 ## IMPORTS ##
 
 # Import modules
-from flask import request, render_template
+from flask import request, render_template, redirect, url_for, flash, session
 from app import app
 import configparser
+import os
 
 # Import functions
-from .db_funcs import db_init, insert_user
-
+from .user_db_functions import create_user, validate_login
 
 ## MAIN VARS ##
 
-# Setup configuration file
-config = configparser.ConfigParser()
-config.read('configs/configs.ini')
-
-# Read configuration file
-
+# Session setup
+app.config['SESSION_TYPE'] = 'memcached'
+app.config['SECRET_KEY'] = os.urandom(12)
 
 ## ROUTES ##
 
@@ -27,10 +24,21 @@ def home():
     return render_template("public/index.html")
 
 # Login
-@app.route('/login')
+@app.route('/login', methods =  ["POST"])
 def login():
 
-    return "Success"
+    # Reset login cookie
+    session['logged_in'] = False
+
+    # Validate login and flash result message
+    result_msg = validate_login()
+    flash(result_msg)
+
+    # If login is successful
+    if session['logged_in'] == True:
+        return redirect(url_for('profile'))
+
+    return redirect(url_for('home'))
 
 # Register
 @app.route('/register')
@@ -38,10 +46,18 @@ def register():
 
     return render_template("public/register.html")
 
-# Register
+# Create account
 @app.route('/create-account', methods =  ["POST"])
 def create_account():
 
-    insert_user()
+    # Create account and flash result message
+    result_msg = create_user()
+    flash(result_msg)
 
-    return "Success"
+    return redirect(url_for('register'))
+
+# Personal page
+@app.route('/profile/<user>')
+def profile():
+
+    return render_template("public/register.html")
