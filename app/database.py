@@ -49,3 +49,7 @@ class Database(object):
     @staticmethod
     def update_one(collection, query, data):
         Database.DATABASE[collection].update_one(query, data)
+
+# Database initialization
+def db_init():
+    Database.initialize()
