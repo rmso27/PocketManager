@@ -28,6 +28,8 @@ def create_user():
     if user_exists != 0:
         Database.insert_one('users', {
             "_id": uuid.uuid4().hex,
+            "user_id": "1",
+            "name": request.form['name'],
             "email": request.form['email'],
             "password": hash_me(request.form['password']),
             "createdAt": timestamp
@@ -38,18 +40,18 @@ def create_user():
 
     return result_msg
 
-# Validate email
-def validate_user():
+# Validate user
+def validate_user(email):
 
     # Query database for user data
-    if Database.find_one('users', {"email": request.form['email']}):
+    if Database.find_one('users', {"email": email}):
         user_exists = 0
     else:
         user_exists = 1
 
     return user_exists
 
-# Validate email
+# Validate login
 def validate_login():
 
     # Query database for user data
@@ -58,7 +60,8 @@ def validate_login():
     # If the user exists, validate password and set login status
     if user and bcrypt.checkpw(request.form['password'].encode('utf-8'), user['password']):
         session['logged_in'] = True
+        session['user'] = user['user_id']
+        session['name'] = user['name']
     else:
         result_msg = "Authentication failed."
-
-    return result_msg
+        return result_msg
