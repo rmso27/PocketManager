@@ -29,14 +29,16 @@ def login():
 
     # Reset login cookie
     session['logged_in'] = False
+    session['user'] = None
 
-    # Validate login and flash result message
+    # Validate login
     result_msg = validate_login()
-    flash(result_msg)
 
     # If login is successful
     if session['logged_in'] == True:
-        return redirect(url_for('profile'))
+        return redirect(url_for('profile', id = session['user']))
+    else:
+        flash(result_msg)
 
     return redirect(url_for('home'))
 
@@ -57,7 +59,7 @@ def create_account():
     return redirect(url_for('register'))
 
 # Personal page
-@app.route('/profile/<user>')
-def profile():
+@app.route('/profile/<id>')
+def profile(id):
 
-    return render_template("public/register.html")
+    return render_template("public/profile.html", name = session['name'])
