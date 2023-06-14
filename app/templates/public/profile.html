@@ -2,6 +2,14 @@
 
 {% block content %}
 
-    <p>Olá, {{ name }}</p>
+    <div class = "wrapper">
+        <div class = "header">
+            {% include "components/headers/ProfilePageHeader.html" %}
+        </div>
+        <div class = "content">
+            {% include "components/navbars/ProfilePageNavbar.html" %}
+            {% include "components/tables/MainReportTable.html" %}
+        </div>
+    </div>
 
 {% endblock %}
